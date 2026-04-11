@@ -361,40 +361,46 @@ export default function DocForm() {
         <div className="order-2 lg:order-2 p-4 border rounded bg-white">
           <h3 className="font-semibold mb-4">Thông tin nhập liệu</h3>
           {selectedTemplate ? (
-            <div className="space-y-3 h-[70vh] min-h-[520px] overflow-y-auto pr-2">
-              {fieldsToRender.map((key) => {
-                const isLongField = key.includes('chi_tiet') || key.includes('noi_dung') || key.includes('ket_luan') || key === 'cua_ai';
-                const isDateField = ['ngay', 'thang', 'nam'].includes(key);
-                return (
-                  <div key={key}>
-                    <label className="block text-sm font-medium mb-1">{toLabel(key, templateLabels)}</label>
-                    {isLongField ? (
-                      <textarea
-                        rows={3}
-                        value={formData[key] || ''}
-                        onChange={(e) =>
-                          setFormData((prev) => ({ ...prev, [key]: e.target.value }))
-                        }
-                        className="w-full p-2 border rounded"
-                      />
-                    ) : (
-                      <input
-                        type={isDateField ? 'number' : 'text'}
-                        inputMode={isDateField ? 'numeric' : 'text'}
-                        min={key === 'ngay' ? 1 : key === 'thang' ? 1 : key === 'nam' ? 1900 : undefined}
-                        max={key === 'ngay' ? 31 : key === 'thang' ? 12 : key === 'nam' ? 9999 : undefined}
-                        value={formData[key] || ''}
-                        onChange={(e) =>
-                          setFormData((prev) => ({ ...prev, [key]: e.target.value }))
-                        }
-                        className="w-full p-2 border rounded"
-                        placeholder={isDateField ? `Nhập ${toLabel(key, templateLabels).toLowerCase()}` : undefined}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <>
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                <p className="text-sm font-semibold text-blue-900">Template: {selectedTemplate.name}</p>
+                <p className="text-xs text-blue-700">Số field: {fieldsToRender.length}</p>
+              </div>
+              <div className="space-y-3 h-[65vh] min-h-[480px] overflow-y-auto pr-2">
+                {fieldsToRender.map((key) => {
+                  const isLongField = key.includes('chi_tiet') || key.includes('noi_dung') || key.includes('ket_luan') || key === 'cua_ai';
+                  const isDateField = ['ngay', 'thang', 'nam'].includes(key);
+                  return (
+                    <div key={key}>
+                      <label className="block text-sm font-medium mb-1">{toLabel(key, templateLabels)}</label>
+                      {isLongField ? (
+                        <textarea
+                          rows={3}
+                          value={formData[key] || ''}
+                          onChange={(e) =>
+                            setFormData((prev) => ({ ...prev, [key]: e.target.value }))
+                          }
+                          className="w-full p-2 border rounded"
+                        />
+                      ) : (
+                        <input
+                          type={isDateField ? 'number' : 'text'}
+                          inputMode={isDateField ? 'numeric' : 'text'}
+                          min={key === 'ngay' ? 1 : key === 'thang' ? 1 : key === 'nam' ? 1900 : undefined}
+                          max={key === 'ngay' ? 31 : key === 'thang' ? 12 : key === 'nam' ? 9999 : undefined}
+                          value={formData[key] || ''}
+                          onChange={(e) =>
+                            setFormData((prev) => ({ ...prev, [key]: e.target.value }))
+                          }
+                          className="w-full p-2 border rounded"
+                          placeholder={isDateField ? `Nhập ${toLabel(key, templateLabels).toLowerCase()}` : undefined}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           ) : (
             <div className="h-[70vh] min-h-[520px] flex items-center justify-center text-gray-500">
               <p>Chọn template từ danh sách để bắt đầu</p>
