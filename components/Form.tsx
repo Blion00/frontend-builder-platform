@@ -19,7 +19,7 @@ const DEFAULT_LABELS: Record<string, string> = {
   phan: 'Phần',
   cap_bac_nguoi_ky_bia: 'Cấp bậc người ký bìa',
   ho_ten_nguoi_ky_bia: 'Họ tên người ký bìa',
-  nguoi_phe_duyet: 'Người phê duyệt', 
+  nguoi_phe_duyet: 'Người phê duyệt',
   ngay: 'Ngày',
   thang: 'Tháng',
   nam: 'Năm',
@@ -68,6 +68,31 @@ const DEFAULT_FIELDS = [
   'ho_ten_trang_2',
 ];
 
+const MOCK_DATA: Record<string, string> = {
+  don_vi_cap_tren: 'BỘ TƯ LỆNH THỦ ĐÔ',
+  don_vi: 'LỮ ĐOÀN CÔNG BINH 279',
+  ten_giao_an: 'HUẤN LUYỆN ĐIỀU LỆNH ĐỘI NGŨ',
+  phan: 'Khám súng',
+  cap_bac_nguoi_ky_bia: 'THƯỢNG TÁ',
+  ho_ten_nguoi_ky_bia: 'NGUYỄN VĂN A',
+  nguoi_phe_duyet: 'TRUNG ĐOÀN TRƯỞNG',
+  phan_doi_ngu: 'Động tác nghiêm, nghỉ, quay tại chỗ',
+  bai: 'Bài 1: Động tác từng người không súng',
+  cua_ai: 'Đại đội 1, Tiểu đoàn 4',
+  dia_diem_thong_qua: 'Phòng họp Tiểu đoàn 4',
+  chi_tiet_thong_qua: 'Thông qua toàn bộ nội dung lý thuyết và kế hoạch thực hành',
+  dia_diem_phe_duyet: 'Phòng chỉ huy Trung đoàn',
+  chi_tiet_phe_duyet: 'Phê duyệt để tổ chức huấn luyện',
+  noi_dung_giao_an: '- Mục đích: Huấn luyện cho bộ đội nắm chắc động tác.\n- Yêu cầu: Thực hành chuẩn xác, thống nhất.',
+  chi_tiet_noi_dung_giao_an: '1. Ý nghĩa của điều lệnh đội ngũ.\n2. Các cử động đằng trước bước, đằng sau quay.',
+  thuc_hanh_huan_luyen: 'Tổ chức chia tiểu đội luyện tập 3 bước: \n- B1: Từng người tự nghiên cứu.\n- B2: Tiểu đội trưởng hô cho tiểu đội tập.\n- B3: Tập tổng hợp.',
+  chi_tiet_thuc_hanh: 'Thời gian tập: 45 phút.\nNgười phụ trách: Các tiểu đội trưởng.',
+  ket_luan: 'Đơn vị hoàn thành tốt nội dung, tác phong nghiêm túc, đạt loại Khá.',
+  chuc_vu_nguoi_ky_trang_2: 'Tiểu đoàn trưởng',
+  cap_bac_trang_2: 'Thiếu tá',
+  ho_ten_trang_2: 'Trần Văn B',
+};
+
 const toLabel = (key: string, customLabels?: Record<string, string>) => {
   const labels = { ...DEFAULT_LABELS, ...customLabels };
   return labels[key] || key;
@@ -75,25 +100,36 @@ const toLabel = (key: string, customLabels?: Record<string, string>) => {
 
 const buildDefaultDataForTemplate = (template: Template | null) => {
   if (!template) return {};
-  
+
   const today = new Date();
   const todayDay = String(today.getDate()).padStart(2, '0');
   const todayMonth = String(today.getMonth() + 1).padStart(2, '0');
   const todayYear = String(today.getFullYear());
-  
+
   const data: Record<string, string> = {};
   const fields = template.fields && template.fields.length ? template.fields : DEFAULT_FIELDS;
   const defaults = template.defaults || {};
-  
+
   fields.forEach((key) => {
     let value = defaults[key] || '';
+
+    // Sử dụng dữ liệu giả (mock data) nếu không có giá trị mặc định
+    if (!value && MOCK_DATA[key]) {
+      value = MOCK_DATA[key];
+    }
+
     // Auto-fill date fields with today's date when not defined in defaults
     if (key === 'ngay' && !defaults.ngay) value = todayDay;
     if (key === 'thang' && !defaults.thang) value = todayMonth;
     if (key === 'nam' && !defaults.nam) value = todayYear;
+
+    if (['don_vi_cap_tren', 'don_vi', 'ten_giao_an', 'cap_bac_nguoi_ky_bia'].includes(key)) {
+      value = value.toUpperCase();
+    }
+
     data[key] = value;
   });
-  
+
   return data;
 };
 
@@ -148,7 +184,7 @@ export default function DocForm() {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const previewVariant = getPreviewVariant(selectedTemplate || undefined);
-  
+
   // Get fields to render from selected template or use defaults
   const fieldsToRender = selectedTemplate?.fields?.length ? selectedTemplate.fields : DEFAULT_FIELDS;
   const templateLabels = selectedTemplate?.labels || {};
@@ -179,7 +215,7 @@ export default function DocForm() {
     const loadTemplateDetails = async () => {
       if (selectedTemplateId) {
         try {
-          const res = await   fetch(`http://localhost:5000/templates/${selectedTemplateId}`);
+          const res = await fetch(`http://localhost:5000/templates/${selectedTemplateId}`);
           if (res.ok) {
             const data = await res.json();
             const template = data.data as Template;
@@ -299,7 +335,7 @@ export default function DocForm() {
                     <div>{showValue(formData.don_vi_cap_tren)}</div>
                     <div>{showValue(formData.don_vi)}</div>
                   </div>
-            
+
                   <div className="flex-1 flex items-center justify-center">
                     <div className="text-center font-semibold">
                       <div className="text-[14px] leading-8">{previewVariant.coverTitle}</div>
@@ -386,9 +422,13 @@ export default function DocForm() {
                         <textarea
                           rows={3}
                           value={formData[key] || ''}
-                          onChange={(e) =>
-                            setFormData((prev) => ({ ...prev, [key]: e.target.value }))
-                          }
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            if (['don_vi_cap_tren', 'don_vi', 'ten_giao_an', 'cap_bac_nguoi_ky_bia'].includes(key)) {
+                              val = val.toUpperCase();
+                            }
+                            setFormData((prev) => ({ ...prev, [key]: val }));
+                          }}
                           className="w-full p-2 border rounded"
                         />
                       ) : (
@@ -398,9 +438,13 @@ export default function DocForm() {
                           min={key === 'ngay' ? 1 : key === 'thang' ? 1 : key === 'nam' ? 1900 : undefined}
                           max={key === 'ngay' ? 31 : key === 'thang' ? 12 : key === 'nam' ? 9999 : undefined}
                           value={formData[key] || ''}
-                          onChange={(e) =>
-                            setFormData((prev) => ({ ...prev, [key]: e.target.value }))
-                          }
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            if (['don_vi_cap_tren', 'don_vi', 'ten_giao_an', 'cap_bac_nguoi_ky_bia'].includes(key)) {
+                              val = val.toUpperCase();
+                            }
+                            setFormData((prev) => ({ ...prev, [key]: val }));
+                          }}
                           className="w-full p-2 border rounded"
                           placeholder={isDateField ? `Nhập ${toLabel(key, templateLabels).toLowerCase()}` : undefined}
                         />
