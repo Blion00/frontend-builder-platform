@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'https://backend-builder-platform.vercel.app';
 
 export async function getTemplates() {
   const res = await fetch(`${API_BASE}/templates`);
