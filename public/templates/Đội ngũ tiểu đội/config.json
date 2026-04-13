@@ -24,8 +24,8 @@
     "chi_tiet_thuc_hanh",
     "ket_luan",
     "chuc_vu_nguoi_ky_trang_2",
-    "cap_bac_nguoi_ky_trang_2",
-    "ho_ten_nguoi_ky_trang_2"
+    "cap_bac_trang_2",
+    "ho_ten_trang_2"
   ],
   "labels": {
     "don_vi_cap_tren": "Đơn vị cấp trên",
@@ -49,7 +49,7 @@
     "chi_tiet_thuc_hanh": "Chi tiết thực hành",
     "ket_luan": "Kết luận",
     "chuc_vu_nguoi_ky_trang_2": "Chức vụ người ký trang 2",
-    "cap_bac_nguoi_ky_trang_2": "Cấp bậc người ký trang 2",
-    "ho_ten_nguoi_ky_trang_2": "Họ tên người ký trang 2"
+    "cap_bac_trang_2": "Cấp bậc người ký trang 2",
+    "ho_ten_trang_2": "Họ tên người ký trang 2"
   }
 }

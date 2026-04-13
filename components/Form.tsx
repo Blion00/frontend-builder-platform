@@ -36,8 +36,8 @@ const DEFAULT_LABELS: Record<string, string> = {
   chi_tiet_thuc_hanh: 'Chi tiết thực hành',
   ket_luan: 'Kết luận',
   chuc_vu_nguoi_ky_trang_2: 'Chức vụ người ký trang 2',
-  cap_bac_nguoi_ky_trang_2: 'Cấp bậc người ký trang 2',
-  ho_ten_nguoi_ky_trang_2: 'Họ tên người ký trang 2',
+  cap_bac_trang_2: 'Cấp bậc người ký trang 2',
+  ho_ten_trang_2: 'Họ tên người ký trang 2',
 };
 
 const DEFAULT_FIELDS = [
@@ -64,8 +64,8 @@ const DEFAULT_FIELDS = [
   'chi_tiet_thuc_hanh',
   'ket_luan',
   'chuc_vu_nguoi_ky_trang_2',
-  'cap_bac_nguoi_ky_trang_2',
-  'ho_ten_nguoi_ky_trang_2',
+  'cap_bac_trang_2',
+  'ho_ten_trang_2',
 ];
 
 const toLabel = (key: string, customLabels?: Record<string, string>) => {
@@ -82,12 +82,12 @@ const buildDefaultDataForTemplate = (template: Template | null) => {
   const todayYear = String(today.getFullYear());
   
   const data: Record<string, string> = {};
-  const fields = template.fields || [];
+  const fields = template.fields && template.fields.length ? template.fields : DEFAULT_FIELDS;
   const defaults = template.defaults || {};
   
   fields.forEach((key) => {
     let value = defaults[key] || '';
-    // Auto-fill date fields with today's date
+    // Auto-fill date fields with today's date when not defined in defaults
     if (key === 'ngay' && !defaults.ngay) value = todayDay;
     if (key === 'thang' && !defaults.thang) value = todayMonth;
     if (key === 'nam' && !defaults.nam) value = todayYear;
@@ -98,6 +98,15 @@ const buildDefaultDataForTemplate = (template: Template | null) => {
 };
 
 const showValue = (value?: string) => (value && value.trim() ? value : '................');
+
+const getFormFieldValue = (data: Record<string, string>, keys: string[]) => {
+  for (const key of keys) {
+    if (data[key] && data[key].trim()) {
+      return data[key];
+    }
+  }
+  return '';
+};
 
 const getPreviewVariant = (template?: Template | null) => {
   const filePath = template?.file_path || '';
@@ -331,7 +340,7 @@ export default function DocForm() {
                     <p className="tracking-widest text-gray-700">.......................................................................</p>
 
                     <p className="mt-2"><span className="font-semibold">3. Nội dung phê duyệt:</span></p>
-                    <p>a. Nội dung giáo án: {showValue(formData.noi_dung_giao_an)}</p>
+                    <p>a. Nội dung giáo án: {showValue(getFormFieldValue(formData, ['noi_dung_giao_an', 'noi_dung_phe_duyet']))}</p>
                     <p>{showValue(formData.chi_tiet_noi_dung_giao_an)}</p>
                     <p className="tracking-widest text-gray-700">.......................................................................</p>
                     <p>b. Thực hành huấn luyện: {showValue(formData.thuc_hanh_huan_luyen)}</p>
@@ -349,8 +358,8 @@ export default function DocForm() {
                         ? showValue(formData.chuc_vu_nguoi_ky_trang_2)
                         : previewVariant.signerTitle}
                     </div>
-                    <div className="mt-10">{showValue(formData.cap_bac_nguoi_ky_trang_2)}</div>
-                    <div>{showValue(formData.ho_ten_nguoi_ky_trang_2)}</div>
+                    <div className="mt-10">{showValue(formData.cap_bac_trang_2)}</div>
+                    <div>{showValue(formData.ho_ten_trang_2)}</div>
                   </div>
                 </div>
               </div>
